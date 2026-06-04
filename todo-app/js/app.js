@@ -2,7 +2,7 @@ class AplicacionTareas {
     constructor() {
         this.entradaTarea = document.getElementById('todoInput');
         this.botonAgregar = document.getElementById('addBtn');
-        this.listaaTareas = document.getElementById('todoList');
+        this.listaTareas = document.getElementById('todoList');
         this.botonesFiltro = document.querySelectorAll('.filter-btn');
         this.botonLimpiar = document.getElementById('clearBtn');
         this.botonTema = document.getElementById('themeToggle');
@@ -158,7 +158,7 @@ class AplicacionTareas {
     }
     renderizar() {
         const tareasFiltradas = this.obtenerTareasFiltradas();
-        this.listaaTareas.innerHTML = '';
+        this.listaTareas.innerHTML = '';
         if (tareasFiltradas.length === 0) {
             this.estadoVacio.classList.add('show');
         } else {
@@ -166,7 +166,7 @@ class AplicacionTareas {
         }
         tareasFiltradas.forEach(tarea => {
             const li = this.crearElementoTarea(tarea);
-            this.listaaTareas.appendChild(li);
+            this.listaTareas.appendChild(li);
         });
         this.actualizarEstadisticas();
     }
