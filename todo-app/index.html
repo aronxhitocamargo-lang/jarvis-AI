@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Una aplicación de lista de tareas simple pero poderosa con almacenamiento local">
-    <title>✅ Aplicación de Tareas</title>
+    <meta name="description" content="Aplicación inteligente de tareas con IA y búsqueda avanzada">
+    <title>✅ Mis Tareas - Con IA</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,20 +12,68 @@
     <div class="container">
         <header class="app-header">
             <div class="header-content">
-                <h1><i class="fas fa-check-circle"></i> Mis Tareas</h1>
-                <p class="subtitle">Mantente organizado y productivo</p>
+                <h1><i class="fas fa-brain"></i> Mis Tareas Inteligentes</h1>
+                <p class="subtitle">Con IA para tu productividad</p>
             </div>
             <button class="theme-toggle" id="themeToggle">
                 <i class="fas fa-moon"></i>
             </button>
         </header>
+
         <main class="app-main">
-            <section class="input-section">
-                <div class="input-wrapper">
-                    <input type="text" id="todoInput" class="todo-input" placeholder="Agregar una nueva tarea..." autocomplete="off">
-                    <button id="addBtn" class="add-btn"><i class="fas fa-plus"></i> Agregar</button>
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscar tareas...">
+                    <button id="voiceBtn" class="voice-btn" title="Buscar por voz">
+                        <i class="fas fa-microphone"></i>
+                    </button>
                 </div>
             </section>
+
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="input-wrapper">
+                    <input type="text" id="todoInput" class="todo-input" placeholder="Escribe tu tarea aquí..." autocomplete="off">
+                    <div class="input-actions">
+                        <select id="prioritySelect" class="priority-select">
+                            <option value="baja">Prioridad Baja</option>
+                            <option value="media" selected>Prioridad Media</option>
+                            <option value="alta">Prioridad Alta</option>
+                        </select>
+                        <button id="addBtn" class="add-btn"><i class="fas fa-plus"></i> Agregar</button>
+                    </div>
+                </div>
+                <div id="suggestions" class="suggestions-box"></div>
+            </section>
+
+            <!-- AI Insights -->
+            <section class="ai-insights">
+                <div class="insight" id="todayInsight">
+                    <i class="fas fa-calendar-day"></i>
+                    <div>
+                        <span class="insight-label">Hoy</span>
+                        <span class="insight-value" id="todayCount">0</span>
+                    </div>
+                </div>
+                <div class="insight" id="performanceInsight">
+                    <i class="fas fa-chart-line"></i>
+                    <div>
+                        <span class="insight-label">Productividad</span>
+                        <span class="insight-value" id="performanceScore">0%</span>
+                    </div>
+                </div>
+                <div class="insight" id="streakInsight">
+                    <i class="fas fa-fire"></i>
+                    <div>
+                        <span class="insight-label">Racha</span>
+                        <span class="insight-value" id="streakCount">0</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Section -->
             <section class="filter-section">
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-filter="all">
@@ -40,9 +88,15 @@
                         <span class="filter-label">Completadas</span>
                         <span class="filter-count" id="completedCount">0</span>
                     </button>
+                    <button class="filter-btn" data-filter="alta">
+                        <span class="filter-label">🔴 Urgentes</span>
+                        <span class="filter-count" id="urgentCount">0</span>
+                    </button>
                 </div>
-                <button id="clearBtn" class="clear-btn"><i class="fas fa-trash"></i> Limpiar Completadas</button>
+                <button id="clearBtn" class="clear-btn"><i class="fas fa-trash"></i> Limpiar</button>
             </section>
+
+            <!-- Tasks List -->
             <section class="tasks-section">
                 <ul id="todoList" class="todo-list"></ul>
                 <div class="empty-state" id="emptyState">
@@ -50,21 +104,36 @@
                     <p>Sin tareas aún. ¡Agrega una para comenzar!</p>
                 </div>
             </section>
+
+            <!-- Stats Section -->
             <section class="stats-section">
                 <div class="stat">
                     <span class="stat-label">Total:</span>
                     <span class="stat-value" id="totalTasks">0</span>
                 </div>
                 <div class="stat">
+                    <span class="stat-label">Completadas:</span>
+                    <span class="stat-value" id="completedStats">0</span>
+                </div>
+                <div class="stat">
                     <span class="stat-label">Progreso:</span>
                     <span class="stat-value" id="progress">0%</span>
                 </div>
             </section>
+
+            <!-- AI Suggestions -->
+            <section class="ai-suggestions">
+                <h3><i class="fas fa-lightbulb"></i> Sugerencias de IA</h3>
+                <div id="aiSuggestions" class="suggestions-list"></div>
+            </section>
         </main>
+
         <footer class="app-footer">
-            <p>Hecho con <i class="fas fa-heart"></i> para la productividad</p>
+            <p>Hecho con <i class="fas fa-heart"></i> y <i class="fas fa-brain"></i> para tu productividad</p>
         </footer>
     </div>
+
+    <script src="js/ia-engine.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
