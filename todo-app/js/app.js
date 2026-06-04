@@ -1,229 +1,229 @@
-class TodoApp {
+class AplicacionTareas {
     constructor() {
-        this.todoInput = document.getElementById('todoInput');
-        this.addBtn = document.getElementById('addBtn');
-        this.todoList = document.getElementById('todoList');
-        this.filterBtns = document.querySelectorAll('.filter-btn');
-        this.clearBtn = document.getElementById('clearBtn');
-        this.themeToggle = document.getElementById('themeToggle');
-        this.emptyState = document.getElementById('emptyState');
-        this.allCount = document.getElementById('allCount');
-        this.activeCount = document.getElementById('activeCount');
-        this.completedCount = document.getElementById('completedCount');
-        this.totalTasks = document.getElementById('totalTasks');
-        this.progress = document.getElementById('progress');
-        this.todos = [];
-        this.currentFilter = 'all';
-        this.init();
+        this.entradaTarea = document.getElementById('todoInput');
+        this.botonAgregar = document.getElementById('addBtn');
+        this.listaaTareas = document.getElementById('todoList');
+        this.botonesFiltro = document.querySelectorAll('.filter-btn');
+        this.botonLimpiar = document.getElementById('clearBtn');
+        this.botonTema = document.getElementById('themeToggle');
+        this.estadoVacio = document.getElementById('emptyState');
+        this.cuentaTodas = document.getElementById('allCount');
+        this.cuentaActivas = document.getElementById('activeCount');
+        this.cuentaCompletadas = document.getElementById('completedCount');
+        this.totalTareas = document.getElementById('totalTasks');
+        this.progreso = document.getElementById('progress');
+        this.tareas = [];
+        this.filtroActual = 'all';
+        this.inicializar();
     }
-    init() {
-        this.loadTodos();
-        this.attachEventListeners();
-        this.loadTheme();
-        this.render();
+    inicializar() {
+        this.cargarTareas();
+        this.adjuntarEventos();
+        this.cargarTema();
+        this.renderizar();
     }
-    attachEventListeners() {
-        this.addBtn.addEventListener('click', () => this.addTodo());
-        this.todoInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.addTodo();
+    adjuntarEventos() {
+        this.botonAgregar.addEventListener('click', () => this.agregarTarea());
+        this.entradaTarea.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.agregarTarea();
         });
-        this.filterBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => this.setFilter(e.target.closest('.filter-btn')));
+        this.botonesFiltro.forEach(btn => {
+            btn.addEventListener('click', (e) => this.establecerFiltro(e.target.closest('.filter-btn')));
         });
-        this.clearBtn.addEventListener('click', () => this.clearCompleted());
-        this.themeToggle.addEventListener('click', () => this.toggleTheme());
+        this.botonLimpiar.addEventListener('click', () => this.limpiarCompletadas());
+        this.botonTema.addEventListener('click', () => this.cambiarTema());
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') this.cancelEdit();
+            if (e.key === 'Escape') this.cancelarEdicion();
         });
     }
-    addTodo() {
-        const text = this.todoInput.value.trim();
-        if (text === '') {
-            this.todoInput.focus();
+    agregarTarea() {
+        const texto = this.entradaTarea.value.trim();
+        if (texto === '') {
+            this.entradaTarea.focus();
             return;
         }
-        const todo = {
+        const tarea = {
             id: Date.now(),
-            text: text,
-            completed: false,
-            createdAt: new Date().toISOString()
+            texto: texto,
+            completada: false,
+            creadaEn: new Date().toISOString()
         };
-        this.todos.unshift(todo);
-        this.saveTodos();
-        this.todoInput.value = '';
-        this.todoInput.focus();
-        this.render();
+        this.tareas.unshift(tarea);
+        this.guardarTareas();
+        this.entradaTarea.value = '';
+        this.entradaTarea.focus();
+        this.renderizar();
     }
-    deleteTodo(id) {
-        const index = this.todos.findIndex(todo => todo.id === id);
-        if (index !== -1) {
-            const element = document.querySelector(`[data-id="${id}"]`);
-            element.classList.add('removing');
+    eliminarTarea(id) {
+        const indice = this.tareas.findIndex(tarea => tarea.id === id);
+        if (indice !== -1) {
+            const elemento = document.querySelector(`[data-id="${id}"]`);
+            elemento.classList.add('removing');
             setTimeout(() => {
-                this.todos.splice(index, 1);
-                this.saveTodos();
-                this.render();
+                this.tareas.splice(indice, 1);
+                this.guardarTareas();
+                this.renderizar();
             }, 300);
         }
     }
-    toggleTodo(id) {
-        const todo = this.todos.find(t => t.id === id);
-        if (todo) {
-            todo.completed = !todo.completed;
-            this.saveTodos();
-            this.render();
+    cambiarCompletada(id) {
+        const tarea = this.tareas.find(t => t.id === id);
+        if (tarea) {
+            tarea.completada = !tarea.completada;
+            this.guardarTareas();
+            this.renderizar();
         }
     }
-    startEdit(id) {
-        const item = document.querySelector(`[data-id="${id}"]`);
-        item.classList.add('editing');
-        const editInput = item.querySelector('.todo-edit');
-        editInput.focus();
-        editInput.select();
+    iniciarEdicion(id) {
+        const elemento = document.querySelector(`[data-id="${id}"]`);
+        elemento.classList.add('editing');
+        const entradaEdicion = elemento.querySelector('.todo-edit');
+        entradaEdicion.focus();
+        entradaEdicion.select();
     }
-    saveEdit(id) {
-        const item = document.querySelector(`[data-id="${id}"]`);
-        const editInput = item.querySelector('.todo-edit');
-        const newText = editInput.value.trim();
-        if (newText === '') {
-            this.deleteTodo(id);
+    guardarEdicion(id) {
+        const elemento = document.querySelector(`[data-id="${id}"]`);
+        const entradaEdicion = elemento.querySelector('.todo-edit');
+        const nuevoTexto = entradaEdicion.value.trim();
+        if (nuevoTexto === '') {
+            this.eliminarTarea(id);
             return;
         }
-        const todo = this.todos.find(t => t.id === id);
-        if (todo && newText !== todo.text) {
-            todo.text = newText;
-            this.saveTodos();
+        const tarea = this.tareas.find(t => t.id === id);
+        if (tarea && nuevoTexto !== tarea.texto) {
+            tarea.texto = nuevoTexto;
+            this.guardarTareas();
         }
-        this.cancelEdit();
+        this.cancelarEdicion();
     }
-    cancelEdit() {
-        const editingItem = document.querySelector('.todo-item.editing');
-        if (editingItem) {
-            editingItem.classList.remove('editing');
+    cancelarEdicion() {
+        const elementoEdicion = document.querySelector('.todo-item.editing');
+        if (elementoEdicion) {
+            elementoEdicion.classList.remove('editing');
         }
     }
-    setFilter(btn) {
-        this.filterBtns.forEach(b => b.classList.remove('active'));
+    establecerFiltro(btn) {
+        this.botonesFiltro.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        this.currentFilter = btn.dataset.filter;
-        this.render();
+        this.filtroActual = btn.dataset.filter;
+        this.renderizar();
     }
-    clearCompleted() {
-        const completedCount = this.todos.filter(t => t.completed).length;
-        if (completedCount === 0) return;
-        if (confirm(`Are you sure you want to delete ${completedCount} completed task(s)?`)) {
-            this.todos = this.todos.filter(t => !t.completed);
-            this.saveTodos();
-            this.render();
+    limpiarCompletadas() {
+        const conteoCompletadas = this.tareas.filter(t => t.completada).length;
+        if (conteoCompletadas === 0) return;
+        if (confirm(`¿Estás seguro de que deseas eliminar ${conteoCompletadas} tarea(s) completada(s)?`)) {
+            this.tareas = this.tareas.filter(t => !t.completada);
+            this.guardarTareas();
+            this.renderizar();
         }
     }
-    toggleTheme() {
+    cambiarTema() {
         document.body.classList.toggle('dark-mode');
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-        this.updateThemeIcon();
+        const esModoOscuro = document.body.classList.contains('dark-mode');
+        localStorage.setItem('theme', esModoOscuro ? 'dark' : 'light');
+        this.actualizarIconoTema();
     }
-    loadTheme() {
-        const theme = localStorage.getItem('theme') || 'light';
-        if (theme === 'dark') {
+    cargarTema() {
+        const tema = localStorage.getItem('theme') || 'light';
+        if (tema === 'dark') {
             document.body.classList.add('dark-mode');
         }
-        this.updateThemeIcon();
+        this.actualizarIconoTema();
     }
-    updateThemeIcon() {
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        const icon = this.themeToggle.querySelector('i');
-        icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+    actualizarIconoTema() {
+        const esModoOscuro = document.body.classList.contains('dark-mode');
+        const icono = this.botonTema.querySelector('i');
+        icono.className = esModoOscuro ? 'fas fa-sun' : 'fas fa-moon';
     }
-    getFilteredTodos() {
-        switch (this.currentFilter) {
+    obtenerTareasFiltradas() {
+        switch (this.filtroActual) {
             case 'active':
-                return this.todos.filter(t => !t.completed);
+                return this.tareas.filter(t => !t.completada);
             case 'completed':
-                return this.todos.filter(t => t.completed);
+                return this.tareas.filter(t => t.completada);
             default:
-                return this.todos;
+                return this.tareas;
         }
     }
-    updateStats() {
-        const total = this.todos.length;
-        const active = this.todos.filter(t => !t.completed).length;
-        const completed = this.todos.filter(t => t.completed).length;
-        const progressPercentage = total === 0 ? 0 : Math.round((completed / total) * 100);
-        this.totalTasks.textContent = total;
-        this.allCount.textContent = total;
-        this.activeCount.textContent = active;
-        this.completedCount.textContent = completed;
-        this.progress.textContent = `${progressPercentage}%`;
+    actualizarEstadisticas() {
+        const total = this.tareas.length;
+        const activas = this.tareas.filter(t => !t.completada).length;
+        const completadas = this.tareas.filter(t => t.completada).length;
+        const porcentajeProgreso = total === 0 ? 0 : Math.round((completadas / total) * 100);
+        this.totalTareas.textContent = total;
+        this.cuentaTodas.textContent = total;
+        this.cuentaActivas.textContent = activas;
+        this.cuentaCompletadas.textContent = completadas;
+        this.progreso.textContent = `${porcentajeProgreso}%`;
     }
-    render() {
-        const filteredTodos = this.getFilteredTodos();
-        this.todoList.innerHTML = '';
-        if (filteredTodos.length === 0) {
-            this.emptyState.classList.add('show');
+    renderizar() {
+        const tareasFiltradas = this.obtenerTareasFiltradas();
+        this.listaaTareas.innerHTML = '';
+        if (tareasFiltradas.length === 0) {
+            this.estadoVacio.classList.add('show');
         } else {
-            this.emptyState.classList.remove('show');
+            this.estadoVacio.classList.remove('show');
         }
-        filteredTodos.forEach(todo => {
-            const li = this.createTodoElement(todo);
-            this.todoList.appendChild(li);
+        tareasFiltradas.forEach(tarea => {
+            const li = this.crearElementoTarea(tarea);
+            this.listaaTareas.appendChild(li);
         });
-        this.updateStats();
+        this.actualizarEstadisticas();
     }
-    createTodoElement(todo) {
+    crearElementoTarea(tarea) {
         const li = document.createElement('li');
-        li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-        li.dataset.id = todo.id;
+        li.className = `todo-item ${tarea.completada ? 'completed' : ''}`;
+        li.dataset.id = tarea.id;
         li.innerHTML = `
-            <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
-            <span class="todo-text">${this.escapeHtml(todo.text)}</span>
-            <input type="text" class="todo-edit" value="${this.escapeHtml(todo.text)}">
+            <input type="checkbox" class="todo-checkbox" ${tarea.completada ? 'checked' : ''}>
+            <span class="todo-text">${this.escaparHtml(tarea.texto)}</span>
+            <input type="text" class="todo-edit" value="${this.escaparHtml(tarea.texto)}">
             <div class="todo-actions">
-                <button class="todo-action-btn todo-edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                <button class="todo-action-btn todo-delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                <button class="todo-action-btn todo-save-btn" title="Save" style="display:none;"><i class="fas fa-check"></i></button>
+                <button class="todo-action-btn todo-edit-btn" title="Editar"><i class="fas fa-edit"></i></button>
+                <button class="todo-action-btn todo-delete-btn" title="Eliminar"><i class="fas fa-trash"></i></button>
+                <button class="todo-action-btn todo-save-btn" title="Guardar" style="display:none;"><i class="fas fa-check"></i></button>
             </div>
         `;
-        const checkbox = li.querySelector('.todo-checkbox');
-        const editBtn = li.querySelector('.todo-edit-btn');
-        const deleteBtn = li.querySelector('.todo-delete-btn');
-        const saveBtn = li.querySelector('.todo-save-btn');
-        const editInput = li.querySelector('.todo-edit');
-        checkbox.addEventListener('change', () => this.toggleTodo(todo.id));
-        editBtn.addEventListener('click', () => this.startEdit(todo.id));
-        deleteBtn.addEventListener('click', () => this.deleteTodo(todo.id));
-        saveBtn.addEventListener('click', () => this.saveEdit(todo.id));
+        const casilla = li.querySelector('.todo-checkbox');
+        const botonEditar = li.querySelector('.todo-edit-btn');
+        const botonEliminar = li.querySelector('.todo-delete-btn');
+        const botonGuardar = li.querySelector('.todo-save-btn');
+        const entradaEdicion = li.querySelector('.todo-edit');
+        casilla.addEventListener('change', () => this.cambiarCompletada(tarea.id));
+        botonEditar.addEventListener('click', () => this.iniciarEdicion(tarea.id));
+        botonEliminar.addEventListener('click', () => this.eliminarTarea(tarea.id));
+        botonGuardar.addEventListener('click', () => this.guardarEdicion(tarea.id));
         li.addEventListener('click', (e) => {
             if (li.classList.contains('editing')) {
-                if (e.target === editBtn || e.target.closest('.todo-edit-btn')) {
-                    saveBtn.style.display = 'flex';
-                    editBtn.style.display = 'none';
+                if (e.target === botonEditar || e.target.closest('.todo-edit-btn')) {
+                    botonGuardar.style.display = 'flex';
+                    botonEditar.style.display = 'none';
                 }
             }
         });
-        editInput.addEventListener('keypress', (e) => {
+        entradaEdicion.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                this.saveEdit(todo.id);
+                this.guardarEdicion(tarea.id);
             }
         });
-        editInput.addEventListener('blur', () => {
-            this.saveEdit(todo.id);
+        entradaEdicion.addEventListener('blur', () => {
+            this.guardarEdicion(tarea.id);
         });
         return li;
     }
-    escapeHtml(text) {
+    escaparHtml(texto) {
         const div = document.createElement('div');
-        div.textContent = text;
+        div.textContent = texto;
         return div.innerHTML;
     }
-    saveTodos() {
-        localStorage.setItem('todos', JSON.stringify(this.todos));
+    guardarTareas() {
+        localStorage.setItem('tareas', JSON.stringify(this.tareas));
     }
-    loadTodos() {
-        const stored = localStorage.getItem('todos');
-        this.todos = stored ? JSON.parse(stored) : [];
+    cargarTareas() {
+        const almacenado = localStorage.getItem('tareas');
+        this.tareas = almacenado ? JSON.parse(almacenado) : [];
     }
 }
 document.addEventListener('DOMContentLoaded', () => {
-    window.todoApp = new TodoApp();
+    window.aplicacionTareas = new AplicacionTareas();
 });
